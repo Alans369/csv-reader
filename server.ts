@@ -12,10 +12,11 @@ app.use(cors());
 const upload = multer({ dest: "uploads/" });
 
 interface CSVRow {
+  id: number;
   name: string;
   code: string;
   description: string;
-  subCategoryId: number;
+  subCategory: number;
   supplierId: number;
   tipoItem: number;
   tipoDeItem: string;
@@ -44,23 +45,25 @@ app.post("/upload-csv", upload.single("file"), (req: Request, res: Response) => 
     .pipe(csv())
     .on("data", (row: any) => {
       index++;
+      console.log(row.price);
       results.push({
-        name: row.name,
-        code: index.toString(),
-        description: row.name,
-        subCategoryId: Number(row.subCategoryId),
-        supplierId: 1,
+        id: index,
+        name: `${row.name} ${row.description !== 'UNIDAD' ? row.description : ''}`,
+        code: '',
+        description: row.description,
+        subCategory: 173,
+        supplierId: 74,
         tipoItem: 1,
         tipoDeItem: 'Bienes',
         uniMedida: '59',
         unidaDeMedida: 'Unidad',
-        stock: 0,
+        stock: row.stock,
         minimumStock: 0,
-        costoUnitario: 0,
-        branchId: 1,
-        price: row.price,
-        priceA: row.priceA,
-        priceB: row.priceB,
+        costoUnitario: 0.1,
+        branchId: 15,
+        price: Number(row.price),
+        priceA: 0,
+        priceB: 0,
         priceC: 0
       });
     })
