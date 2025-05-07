@@ -54,6 +54,7 @@ app.post("/upload-csv", upload.single("file"), (req: Request, res: Response) => 
     .pipe(csv())
     .on("data", (row: any) => {
       index++;
+      console.log(row.price);
       results.push({
         id: index,
         name: String(row.name).trim(),
