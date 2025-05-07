@@ -2,6 +2,7 @@
   "name": "csv-reader-node",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon --exec ts-node server.ts",
     "dev": "ts-node server.ts"

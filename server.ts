@@ -1,4 +1,5 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import type { Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
 import csv from "csv-parser";
@@ -11,24 +12,33 @@ app.use(cors());
 
 const upload = multer({ dest: "uploads/" });
 
+// interface CSVRow {
+//   id: number;
+//   name: string;
+//   code: string;
+//   description: string;
+//   subCategoryId: number;
+//   supplierId: number;
+//   tipoItem: number;
+//   tipoDeItem: string;
+//   uniMedida: string;
+//   unidaDeMedida: string;
+//   stock: number;
+//   minimumStock: number;
+//   costoUnitario: number;
+//   branchId: number;
+//   price: number;
+//   priceA: number;
+//   priceB: number;
+//   priceC: number;
+// }
 interface CSVRow {
-  name: string;
-  code: string;
-  description: string;
-  subCategoryId: number;
-  supplierId: number;
-  tipoItem: number;
-  tipoDeItem: string;
-  uniMedida: string;
-  unidaDeMedida: string;
+  id: number;
   stock: number;
-  minimumStock: number;
-  costoUnitario: number;
-  branchId: number;
+  name: string;
   price: number;
-  priceA: number;
-  priceB: number;
-  priceC: number;
+  cost: number;
+  code: string;
 }
 
 app.post("/upload-csv", upload.single("file"), (req: Request, res: Response) => {
@@ -45,27 +55,17 @@ app.post("/upload-csv", upload.single("file"), (req: Request, res: Response) => 
     .on("data", (row: any) => {
       index++;
       results.push({
-        name: row.name,
-        code: index.toString(),
-        description: row.name,
-        subCategoryId: Number(row.subCategoryId),
-        supplierId: 1,
-        tipoItem: 1,
-        tipoDeItem: 'Bienes',
-        uniMedida: '59',
-        unidaDeMedida: 'Unidad',
-        stock: 0,
-        minimumStock: 0,
-        costoUnitario: 0,
-        branchId: 1,
-        price: row.price,
-        priceA: row.priceA,
-        priceB: row.priceB,
-        priceC: 0
+        id: index,
+        name: String(row.name).trim(),
+        stock: Number(row.stock),
+        price: parseFloat(parseFloat(row.price).toFixed(2)),
+        cost: parseFloat(parseFloat(row.cost).toFixed(2)),
+        code: row.code,
       });
     })
     .on("end", () => {
       fs.unlinkSync(filePath);
+      console.log('Done');
       res.json(results);
     })
     .on("error", (error: Error) => {
