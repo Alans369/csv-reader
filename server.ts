@@ -34,8 +34,9 @@ const upload = multer({ dest: "uploads/" });
 // }
 interface CSVRow {
   id: number;
-  stock: number;
   name: string;
+  description: string;
+  stock: number;
   price: number;
   cost: number;
   code: string;
@@ -54,14 +55,14 @@ app.post("/upload-csv", upload.single("file"), (req: Request, res: Response) => 
     .pipe(csv())
     .on("data", (row: any) => {
       index++;
-      console.log(row.price);
       results.push({
         id: index,
         name: String(row.name).trim(),
+        description: String(row.description).trim(),
         stock: Number(row.stock),
         price: parseFloat(parseFloat(row.price).toFixed(2)),
-        cost: parseFloat(parseFloat(row.cost).toFixed(2)),
-        code: row.code,
+        cost: 1,
+        code: '',
       });
     })
     .on("end", () => {
