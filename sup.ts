@@ -6,35 +6,26 @@ import csv from "csv-parser";
 import fs from "fs";
 
 const app = express();
-const port = 8080;
+const port = 8000;
 
 app.use(cors());
 
 const upload = multer({ dest: "uploads/" });
 
 interface CSVRow {
-  id: number;
-  name: string;
-  code: string;
-  // barcode: string;
-  stock: number;
-  cost: number;
-  price: number;
+  id: number,
+  name: string,
+  comercial: string,
+  nit: string,
+  dui: string,
+  tel: string,
+  email: string,
+  giro: string,
+  nrc: string,
+  address: string,
 }
-// interface CSVRow {
-//   id: number,
-//   code: string,
-//   pcode: string,
-//   nombreDelProducto: string,
-//   descripcion: string,
-//   stockActual: number,
-//   costoUnitarioSinIva: number,
-//   supplier: string,
-//   precioDeVenta: number,
-//   conversion: number,
-// }
 
-app.post("/csv", upload.single("file"), (req: Request, res: Response) => {
+app.post("/upload-csv", upload.single("file"), (req: Request, res: Response) => {
   const results: Array<CSVRow> = [];
 
   if (!req.file) {
@@ -48,12 +39,16 @@ app.post("/csv", upload.single("file"), (req: Request, res: Response) => {
     .on("data", (row: any) => {
       index++;
       results.push({
-        id: Number(index),
-        code: String(row.code.trim()) ?? "",
-        name: String(row.desc.trim()) ?? "",
-        cost: Number(row.cost.trim()) ?? 0,
-        price: Number(row.price.trim()) ?? 0,
-        stock: Number(row.stock.trim()) ?? 0,
+        id: index,
+        name: row.name.trim(),
+        comercial: row.comercial.trim(),
+        nit: row.nit.trim(),
+        dui: row.dui.trim(),
+        tel: row.tel.trim(),
+        email: row.email.trim(),
+        giro: row.giro.trim(),
+        nrc: row.nrc.trim(),
+        address: row.address.trim(),
       });
     })
     .on("end", () => {
