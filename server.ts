@@ -16,10 +16,18 @@ interface CSVRow {
   id: number;
   name: string;
   code: string;
-  // barcode: string;
+  barcode: string;
+  sub: string;
+  desc: string;
+  cat: string;
+  supplier: string;
   stock: number;
+  min: number;
   cost: number;
   price: number;
+  priceA: number;
+  priceB: number;
+  priceC: number;
 }
 // interface CSVRow {
 //   id: number,
@@ -34,6 +42,12 @@ interface CSVRow {
 //   conversion: number,
 // }
 
+function generateCode(name: string): string {
+  const firstFourLetters = name.replace(/\s/g, '').slice(0, 4).toUpperCase();
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
+  return `${firstFourLetters}${randomNumber}`;
+}
+
 app.post("/csv", upload.single("file"), (req: Request, res: Response) => {
   const results: Array<CSVRow> = [];
 
@@ -47,13 +61,23 @@ app.post("/csv", upload.single("file"), (req: Request, res: Response) => {
     .pipe(csv())
     .on("data", (row: any) => {
       index++;
+      let code = row.code.trim() === "" ? generateCode(row.name.trim()) : row.code.trim();
       results.push({
         id: Number(index),
-        code: String(row.code.trim()) ?? "",
-        name: String(row.desc.trim()) ?? "",
-        cost: Number(row.cost.trim()) ?? 0,
+        code: code,
+        barcode: String(row.barcode.trim()) ?? "",
+        name: String(row.name.trim() + " " + row.brand.trim()),
+        cost: Number(row.COSTO.trim()) ?? 0,
+        desc: "",
         price: Number(row.price.trim()) ?? 0,
         stock: Number(row.stock.trim()) ?? 0,
+        sub: String(row.sub.trim()) ?? "",
+        cat: String(row.cat.trim()) ?? "",
+        supplier: String(row.supplier.trim()) ?? "",
+        min: Number(row.min.trim()) ?? 0,
+        priceA: Number(row.priceA.trim()) ?? 0,
+        priceB: Number(row.priceB.trim()) ?? 0,
+        priceC: Number(row.priceC.trim()) ?? 0,
       });
     })
     .on("end", () => {
