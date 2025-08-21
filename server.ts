@@ -5,6 +5,8 @@ import multer from "multer";
 import csv from "csv-parser";
 import fs from "fs";
 
+import {helper}from "./helper.ts";
+
 const app = express();
 const port = 8080;
 
@@ -29,6 +31,8 @@ interface CSVRow {
   priceB: number;
   priceC: number;
 }
+
+type CSVRowWithOptionalFields = Pick<CSVRow, 'code' | 'name' |  'price' | 'stock' > 
 // interface CSVRow {
 //   id: number,
 //   code: string,
@@ -43,13 +47,18 @@ interface CSVRow {
 // }
 
 function generateCode(name: string): string {
+ 
+
   const firstFourLetters = name.replace(/\s/g, '').slice(0, 4).toUpperCase();
   const randomNumber = Math.floor(1000 + Math.random() * 9000);
   return `${firstFourLetters}${randomNumber}`;
 }
 
+
+
+
 app.post("/csv", upload.single("file"), (req: Request, res: Response) => {
-  const results: Array<CSVRow> = [];
+  const results: Array<CSVRowWithOptionalFields> = [];
 
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
@@ -61,29 +70,29 @@ app.post("/csv", upload.single("file"), (req: Request, res: Response) => {
     .pipe(csv())
     .on("data", (row: any) => {
       index++;
-      let code = row.code.trim() === "" ? generateCode(row.name.trim()) : row.code.trim();
+     
+      const cleanedValue = row.precio.replace(/[$,]/g, '');
+     
+      
+      let code = row.code === undefined ? generateCode(row.desc) : row.code;
       results.push({
-        id: Number(index),
         code: code,
-        barcode: String(row.barcode.trim()) ?? "",
-        name: String(row.name.trim() + " " + row.brand.trim()),
-        cost: Number(row.COSTO.trim()) ?? 0,
-        desc: "",
-        price: Number(row.price.trim()) ?? 0,
+        name: String(row.desc.trim() ),
+        price: Number(cleanedValue || 0),
         stock: Number(row.stock.trim()) ?? 0,
-        sub: String(row.sub.trim()) ?? "",
-        cat: String(row.cat.trim()) ?? "",
-        supplier: String(row.supplier.trim()) ?? "",
-        min: Number(row.min.trim()) ?? 0,
-        priceA: Number(row.priceA.trim()) ?? 0,
-        priceB: Number(row.priceB.trim()) ?? 0,
-        priceC: Number(row.priceC.trim()) ?? 0,
+     
       });
     })
     .on("end", () => {
       fs.unlinkSync(filePath);
-      console.log('Done');
-      res.json(results);
+
+      var resultado  = helper(results);
+      
+      console.log(resultado);
+
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end(resultado);
+
     })
     .on("error", (error: Error) => {
       res.status(500).json({ error: error.message });
