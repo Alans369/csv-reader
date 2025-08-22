@@ -6,7 +6,7 @@
 "scripts": {
   "start": "nodemon --exec node --loader ts-node/esm server.ts",
   "dev": "node --loader ts-node/esm server.ts",
-  "dev:1": "node --loader ts-node/esm util.ts"
+  "dev:1": "node --loader ts-node/esm server3.ts"
 },
   "author": "castrovc",
   "license": "ISC",

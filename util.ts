@@ -66,5 +66,25 @@ console.log(InsertSql.consulta);*/
 
 
 
-
+type  productos =  {
+  name: string,
+  description: string,
+  minimumStock: 0,
+  propertyId: 1,
+  equipmentId: 1,
+  categoryId: 0,
+  modelId: 1,
+  price: 10,
+  priceA: 20,
+  priceB: 30,
+  priceC: 40,
+  priceD: 50,
+  code: "",
+  number: string,
+  supplierId: 1,
+  branch: [
+    {"id":1, "stock": 1}
+  ],
+  mainProducts: []
+}
 
